@@ -76,3 +76,56 @@ def test_user_creation_side_effect():
     users = response.json()
     assert len(users) == 1
     assert users[0]["email"] == "newuser@example.com"
+
+def test_invalid_email_validation():
+    # Перевірка на відсутність '@'
+    payload = {
+        "user": {"email": "invalid-email", "password": "password123", "role": "customer"},
+        "items": [{"category": 1, "price": 100}],
+        "payment": "card"
+    }
+    response = client.post("/buy", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid email"
+
+def test_mixed_cart_calculation():
+    # Перевірка суми кількох товарів (100 + 200 = 300)
+    payload = {
+        "user": {"email": "test@example.com", "password": "password123", "role": "customer"},
+        "items": [
+            {"category": 1, "price": 100},
+            {"category": 1, "price": 200}
+        ],
+        "payment": "card"
+    }
+    response = client.post("/buy", json=payload)
+    assert response.status_code == 200
+    assert response.json()["total"] == 300
+
+def test_high_value_bonus_payment_no_fraud():
+    # Оплата бонусами не повинна тригерити перевірку фроду, навіть якщо сума велика
+    # (в коді перевірка стоїть тільки для 'card')
+    payload = {
+        "user": {"email": "bonus@example.com", "password": "password123", "role": "new"},
+        "items": [{"category": 1, "price": 6000}], 
+        "payment": "bonus"
+    }
+    response = client.post("/buy", json=payload)
+    assert response.status_code == 200
+    assert response.json()["total"] == 6000
+
+def test_existing_user_no_duplicate():
+    # Якщо користувач вже є, новий не створюється (id залишається тим самим)
+    user_data = {"email": "repeat@example.com", "password": "password123", "role": "customer"}
+    
+    # Перша покупка
+    client.post("/buy", json={"user": user_data, "items": [], "payment": "card"})
+    # Друга покупка тим самим юзером
+    client.post("/buy", json={"user": user_data, "items": [], "payment": "card"})
+    
+    response = client.get("/users")
+    users = response.json()
+    
+    # Має бути тільки 1 юзер з таким email
+    assert len(users) == 1
+    assert users[0]["email"] == "repeat@example.com"
