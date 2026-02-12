@@ -1,0 +1,64 @@
+# --- Python Bytecode (Скомпільовані файли) ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environments (Віртуальні оточення) ---
+# Найпоширеніші назви папок
+env/
+venv/
+.venv/
+.env/
+venv.bak/
+
+# --- Environment Variables (Секретні дані) ---
+# НІКОЛИ не заливай ці файли на GitHub
+.env
+.env.local
+.env.*
+# Виняток: приклад файлу можна залити
+!.env.example
+
+# --- IDE & Editors (Налаштування редакторів) ---
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+# PyCharm / JetBrains
+.idea/
+
+# --- Testing & Coverage (Результати тестів) ---
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# --- Distribution / Packaging (Білд файли) ---
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# --- Type Checking (Mypy) ---
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# --- Databases (Локальні бази даних) ---
+*.sqlite3
+*.db
+
+# --- Logs (Логи) ---
+*.log
+# Специфічно для твоєї лаби:
+order_log.txt
+
+# --- OS Specific (Системні файли) ---
+# Mac
+.DS_Store
+# Windows
+Thumbs.db
