@@ -17,6 +17,9 @@ jobs:
   lint:
     name: 🔍 Lint & Static Analysis
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./lab5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -53,6 +56,10 @@ jobs:
     env:
       APP_ENV: test
 
+    defaults:
+      run:
+        working-directory: ./lab5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -81,14 +88,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage.xml
+          path: lab5/coverage.xml
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results
-          path: test-results.xml
+          path: lab5/test-results.xml
 
   # ──────────────────────────────────────────────────────────────────────────────
   # Job 3 — Build Docker Image
@@ -129,8 +136,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./lab5
+          file: ./lab5/Dockerfile
           target: runtime
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
