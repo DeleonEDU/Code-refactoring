@@ -2,7 +2,6 @@
 Юніт-тести для репозиторіїв.
 """
 
-import pytest
 from src.models.book import Book
 from src.models.user import User
 from src.repositories.book_repository import BookRepository

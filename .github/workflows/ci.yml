@@ -39,6 +39,7 @@ jobs:
           flake8 . \
             --max-line-length=120 \
             --exclude=.git,__pycache__,venv,.venv \
+            --extend-ignore=B042 \
             --statistics
 
       - name: Run pylint

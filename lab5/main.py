@@ -8,10 +8,12 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from src.repositories.book_repository import BookRepository
-from src.repositories.user_repository import UserRepository
-from src.services.library_service import LibraryService
-from src.controllers.library_controller import LibraryController
+# pylint: disable=wrong-import-position
+from src.repositories.book_repository import BookRepository  # noqa: E402
+from src.repositories.user_repository import UserRepository  # noqa: E402
+from src.services.library_service import LibraryService  # noqa: E402
+from src.controllers.library_controller import LibraryController  # noqa: E402
+# pylint: enable=wrong-import-position
 
 
 def main():
