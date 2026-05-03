@@ -1,146 +1,117 @@
-# Бібліотечна система — Лабораторна робота №5
+# 📚 Library Management System
 
-## Опис проєкту
+![CI/CD Pipeline](https://github.com/<YOUR_USERNAME>/<YOUR_REPO>/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.11-blue)
+![Docker](https://img.shields.io/badge/docker-ready-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-Система управління бібліотекою, реалізована на Python з дотриманням шаблону **Controller-Service-Repository**. Система реалізує 4 основні бізнес-сценарії та покрита 35 юніт-тестами.
-
----
-
-## Структура проєкту
-
-```
-library_system/
-├── src/
-│   ├── models/
-│   │   ├── book.py          # Модель книги
-│   │   └── user.py          # Модель користувача
-│   ├── repositories/
-│   │   ├── book_repository.py   # Репозиторій книг
-│   │   └── user_repository.py   # Репозиторій користувачів
-│   ├── services/
-│   │   ├── library_service.py   # Бізнес-логіка (головний сервіс)
-│   │   └── exceptions.py        # Власні виключення
-│   ├── controllers/
-│   │   └── library_controller.py  # CLI-контролер
-│   └── dto/
-│       └── library_dto.py       # Data Transfer Objects
-├── tests/
-│   ├── test_library_service.py  # 25 тестів сервісу
-│   └── test_repositories.py     # 10 тестів репозиторіїв
-├── main.py                      # Демонстрація системи
-├── pytest.ini                   # Конфігурація pytest
-└── README.md
-```
+Система управління бібліотекою, реалізована з дотриманням принципів SOLID та покрита unit-тестами.
 
 ---
 
-## Бізнес-сценарії
+## 📋 Зміст
 
-### 1. Видача книги (`issue_book`)
-Користувач бере книгу з бібліотеки. Перевіряється:
-- існування користувача і книги в системі
-- доступність книги (не видана іншому)
-- ліміт книг на руках (max 3)
-
-### 2. Повернення книги (`return_book`)
-Користувач повертає книгу. Перевіряється:
-- існування користувача і книги
-- що книга дійсно була видана саме цьому користувачу
-
-### 3. Пошук книги (`search_books`)
-Пошук за назвою, автором або ISBN. Регістр не враховується.
-
-### 4. Реєстрація користувача (`register_user`)
-Реєстрація нового читача. Перевіряється унікальність email.
+- [Запуск через Docker](#-запуск-через-docker)
+- [Локальний запуск](#-локальний-запуск)
+- [Змінні середовища](#-змінні-середовища)
+- [Тести](#-тести)
+- [Структура проєкту](#-структура-проєкту)
 
 ---
 
-## Встановлення та запуск
+## 🐳 Запуск через Docker
 
-### Вимоги
-- Python 3.8+
-- pytest
+### Передумови
+- [Docker](https://docs.docker.com/get-docker/) ≥ 24.0
+- [Docker Compose](https://docs.docker.com/compose/) ≥ 2.0
 
-### Встановлення залежностей
+### Крок 1 — Клонувати репозиторій
 ```bash
-pip install pytest pylint
+git clone https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git
+cd <YOUR_REPO>
 ```
 
-### Запуск тестів
+### Крок 2 — Запустити додаток
 ```bash
-# Усі тести з детальним виводом
-pytest tests/ -v
-
-# Тільки тести сервісу
-pytest tests/test_library_service.py -v
-
-# Тільки тести репозиторіїв
-pytest tests/test_repositories.py -v
-
-# Показати зведений результат
-pytest tests/ -v --tb=short
+docker compose up -d
 ```
 
-### Запуск демонстрації
+### Зупинити додаток
+```bash
+docker compose down
+```
+
+### Запустити тести в окремому контейнері
+```bash
+docker compose --profile test up tests
+```
+
+---
+
+## 💻 Локальний запуск
+
+### Передумови
+- Python 3.11+
+
+### Крок 1 — Встановити залежності
+```bash
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Крок 2 — Запустити додаток
 ```bash
 python main.py
 ```
 
-### Перевірка якості коду (flake8)
+---
+
+## ⚙️ Змінні середовища
+
+| Змінна       | Опис                               | За замовчуванням      |
+|--------------|------------------------------------|-----------------------|
+| `APP_ENV`    | Середовище (`production`/`test`)   | `production`          |
+
+---
+
+## 🧪 Тести
+
+### Запуск тестів локально
 ```bash
-pylint src/
+pytest tests/ -v
+```
+
+### Запуск з покриттям коду
+```bash
+pytest tests/ -v --cov=. --cov-report=term-missing
+```
+
+### Запуск у Docker
+```bash
+docker compose --profile test up tests
 ```
 
 ---
 
-## Результати тестів
+## 📁 Структура проєкту
 
 ```
-============================= test session starts ==============================
-collected 35 items
-
-tests/test_library_service.py::TestIssueBook::test_issue_book_success PASSED
-tests/test_library_service.py::TestIssueBook::test_issued_book_appears_in_user_list PASSED
-tests/test_library_service.py::TestIssueBook::test_issue_book_user_not_found PASSED
-tests/test_library_service.py::TestIssueBook::test_issue_book_book_not_found PASSED
-tests/test_library_service.py::TestIssueBook::test_issue_already_borrowed_book PASSED
-tests/test_library_service.py::TestIssueBook::test_issue_book_exceeds_limit PASSED
-tests/test_library_service.py::TestReturnBook::test_return_book_success PASSED
-tests/test_library_service.py::TestReturnBook::test_returned_book_removed_from_user_list PASSED
-tests/test_library_service.py::TestReturnBook::test_return_book_not_borrowed_by_user PASSED
-tests/test_library_service.py::TestReturnBook::test_return_book_user_not_found PASSED
-tests/test_library_service.py::TestReturnBook::test_book_available_again_after_return PASSED
-tests/test_library_service.py::TestSearchBooks::test_search_by_title_found PASSED
-tests/test_library_service.py::TestSearchBooks::test_search_by_title_case_insensitive PASSED
-tests/test_library_service.py::TestSearchBooks::test_search_by_author PASSED
-tests/test_library_service.py::TestSearchBooks::test_search_by_isbn PASSED
-tests/test_library_service.py::TestSearchBooks::test_search_not_found PASSED
-tests/test_library_service.py::TestSearchBooks::test_search_all_when_no_criteria PASSED
-tests/test_library_service.py::TestRegisterUser::test_register_user_success PASSED
-tests/test_library_service.py::TestRegisterUser::test_register_duplicate_email PASSED
-tests/test_library_service.py::TestRegisterUser::test_register_empty_name_raises PASSED
-tests/test_library_service.py::TestRegisterUser::test_register_empty_email_raises PASSED
-tests/test_library_service.py::TestAddBook::test_add_book_success PASSED
-tests/test_library_service.py::TestAddBook::test_add_book_duplicate_isbn PASSED
-tests/test_library_service.py::TestAddBook::test_add_book_empty_fields_raises PASSED
-tests/test_library_service.py::TestGetAvailableBooks::test_available_books_excludes_issued PASSED
-tests/test_repositories.py::TestBookRepository::test_save_and_find_by_id PASSED
-tests/test_repositories.py::TestBookRepository::test_find_by_id_not_found PASSED
-tests/test_repositories.py::TestBookRepository::test_find_by_title PASSED
-tests/test_repositories.py::TestBookRepository::test_find_available PASSED
-tests/test_repositories.py::TestBookRepository::test_delete PASSED
-tests/test_repositories.py::TestBookRepository::test_exists_by_isbn PASSED
-tests/test_repositories.py::TestUserRepository::test_save_and_find_by_id PASSED
-tests/test_repositories.py::TestUserRepository::test_find_by_email PASSED
-tests/test_repositories.py::TestUserRepository::test_find_by_email_case_insensitive PASSED
-tests/test_repositories.py::TestUserRepository::test_exists_by_email PASSED
-
-============================== 35 passed in 0.18s ==============================
-```
-
-## Результат pylint
-
-```
-------------------------------------------------------------------
-Your code has been rated at 9.75/10
+library-system/
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # GitHub Actions CI/CD
+├── src/
+│   ├── controllers/            # Контролери (CLI)
+│   ├── dto/                    # Data Transfer Objects
+│   ├── models/                 # Доменні моделі
+│   ├── repositories/           # Патерн Repository (In-memory)
+│   └── services/               # Бізнес-логіка
+├── tests/                      # Unit-тести
+├── main.py                     # Точка входу (CLI демонстрація)
+├── Dockerfile                  # Production image
+├── Dockerfile.test             # Test image
+├── docker-compose.yaml
+├── requirements.txt
+└── README.md
 ```

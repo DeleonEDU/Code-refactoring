@@ -1,0 +1,37 @@
+version: "3.9"
+
+# ─── Shared network ───────────────────────────────────────────────────────────
+networks:
+  library_net:
+    driver: bridge
+
+# ─── Services ─────────────────────────────────────────────────────────────────
+services:
+
+  # ── Application ───────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: library_app
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+    networks:
+      - library_net
+
+  # ── Test runner (runs once, then exits) ──────────────────────────────────────
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: library_tests
+    environment:
+      APP_ENV: test
+    networks:
+      - library_net
+    volumes:
+      - ./coverage.xml:/app/coverage.xml   # export coverage report
+    profiles:
+      - test          # run only via: docker compose --profile test up tests
